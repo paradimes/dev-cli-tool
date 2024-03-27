@@ -1,1 +1,0 @@
-// React project index.js

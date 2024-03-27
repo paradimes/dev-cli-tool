@@ -5,6 +5,20 @@ import { createProjectDirectory, generateBoilerplateCode } from "./commands.js";
 import { createRepository } from "./github.js";
 import inquirer from "inquirer";
 import { loadConfig, saveConfig } from "./config.js";
+import path from "path";
+import { exec } from "child_process";
+
+function execCommand(command) {
+  return new Promise((resolve, reject) => {
+    exec(command, (error, stdout, stderr) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(stdout.trim());
+      }
+    });
+  });
+}
 
 const args = minimist(process.argv.slice(2));
 const config = loadConfig();
@@ -19,7 +33,7 @@ if (args._.includes("new")) {
     process.exit(1);
   }
 
-  const defaultProjectType = config.defaultProjecType || "default";
+  const defaultProjectType = config.defaultProjectType || "default";
 
   inquirer
     .prompt([
@@ -40,61 +54,123 @@ if (args._.includes("new")) {
       process.exit(1);
     });
 } else if (args._.includes("generate")) {
-  const fileType = args._[1];
-  const fileName = args._[2];
-
-  if (!fileType) {
-    console.log("Please provide a file type.");
-    process.exit(1);
-  }
-
-  if (!["component", "service"].includes(fileType)) {
-    console.log(`Invalid file type: ${fileType}`);
-    console.log(`Supported file types: component, service`);
-    process.exit(1);
-  }
-
-  if (!fileName) {
-    console.log(`Please provide a file name.`);
-    process.exit(1);
-  }
-
-  generateBoilerplateCode(fileType, fileName);
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "fileType",
+        message: "Select what type of file you want to generate:",
+        choices: ["component", "service"],
+      },
+      {
+        type: "input",
+        name: "fileName",
+        message: "Enter the file name:",
+        validate: (input) => {
+          if (input.trim() === "") {
+            return "Please enter a valid file name.";
+          }
+          return true;
+        },
+      },
+    ])
+    .then((answers) => {
+      const { fileType, fileName } = answers;
+      generateBoilerplateCode(fileType, fileName);
+    })
+    .catch((error) => {
+      console.error(`Error:, ${error}`);
+      process.exit(1);
+    });
 } else if (args._.includes("create-repo")) {
-  const repoName = args._[1];
-  const repoDescription = args.repoDescription || "";
-  const isPrivate = args.private || false;
-  const authToken = args.token;
+  inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "repoName",
+        message: "Enter the repository name:",
+        validate: (input) => {
+          if (input.trim() === "") {
+            return "Please enter a valid repository name.";
+          }
+          return true;
+        },
+      },
+      {
+        type: "input",
+        name: "repoDescription",
+        message: "Enter the repository description (optional):",
+      },
+      {
+        type: "confirm",
+        name: "isPrivate",
+        message: "Do you want to make the repository private?",
+        default: false,
+      },
+      {
+        type: "input",
+        name: "authToken",
+        message:
+          "Enter your GitHub personal access token (optional if you've already configured it):",
+        default: config.authToken,
+        validate: (input) => {
+          if (input.trim() === "") {
+            return "Please enter a valid GitHub personal access token.";
+          }
+          return true;
+        },
+      },
+    ])
+    .then(async (answers) => {
+      const { repoName, repoDescription, isPrivate, authToken } = answers;
 
-  if (!repoName) {
-    console.log("Please provide a repository name.");
-  }
-
-  if (!authToken) {
-    console.log(
-      `Please provide a GitHub authentication token using the --token flag.`
-    );
-    process.exit(1);
-  }
-
-  createRepository(repoName, repoDescription, isPrivate, authToken);
+      try {
+        const cloneUrl = await createRepository(
+          repoName,
+          repoDescription,
+          isPrivate,
+          authToken
+        );
+        const repoPath = path.join(process.cwd(), repoName);
+        await execCommand(`git clone ${cloneUrl} ${repoPath}`);
+        console.log(`Cloned repository to ${repoPath}`);
+        console.log(`Repository initialized with basic files`);
+      } catch (error) {
+        console.error(`Error creating repository: ${error}`);
+        process.exit(1);
+      }
+    });
 } else if (args._.includes("config")) {
-  const defaultProjectType = args._[1];
+  inquirer
+    .prompt([
+      {
+        type: "list",
+        name: "projectType",
+        message: "Select a default project type:",
+        choices: ["react", "express"],
+        default: config.defaultProjectType,
+      },
+      {
+        type: "input",
+        name: "authToken",
+        message: "Enter your Github personal access token (optional):",
+      },
+    ])
+    .then((answers) => {
+      const { defaultProjectType, authToken } = answers;
 
-  if (!defaultProjectType) {
-    console.log(`Please provide a default project type.`);
-    process.exit(1);
-  }
+      if (defaultProjectType) {
+        config.defaultProjectType = defaultProjectType;
+      }
 
-  if (!["default", "react", "express"].includes(defaultProjectType)) {
-    console.log(`Invalid project type: ${defaultProjectType}`);
-    console.log(`Supported project types: default, react, express`);
-    process.exit(1);
-  }
+      if (authToken) {
+        config.authToken = authToken;
+      }
 
-  config.defaultProjecType = defaultProjectType;
-  saveConfig(config);
-  console.log(`Default project type set to: ${defaultProjectType}`);
+      saveConfig(config);
+      console.log(`Configuration saved successfully.`);
+    });
 } else {
   console.log(`Unknown command`);
+  process.exit(1);
 }

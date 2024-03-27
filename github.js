@@ -15,6 +15,9 @@ export async function createRepository(
         name: repoName,
         description: repoDescription,
         private: isPrivate,
+        auto_init: true,
+        gitignore_template: "Node",
+        license_template: "mit",
       }),
     });
 
@@ -22,6 +25,7 @@ export async function createRepository(
       const data = await response.json();
       console.log(`Repository ${repoName} created successfully.`);
       console.log(`URL: ${data.html_url}`);
+      return data.clone_url;
     } else {
       const errorData = await response.json();
       console.error(`Error creating repository: ${errorData.message}`);

@@ -66,31 +66,27 @@ export function generateBoilerplateCode(fileType, fileName) {
       case "component":
         boilerplateCode = `import React from 'react';
                 
-                const ${componentName} = () => {
-                    return (
-                        <div>
-                        <h1>${componentName} Component</h1>
-                        </div>
-                        )
-                    }
-                    
-                    export default ${componentName};
-                    `;
+const ${componentName} = () => {
+    return (
+        <div>
+          <h1>${componentName} Component</h1>
+        </div>
+        )
+    }
+    
+export default ${componentName};`;
         break;
 
       case "service":
-        boilerplateCode = `export default class ${fileName} {
-                            constructor() {
-                                // Initalize service
-                            }
-                            
-                            //Add service methods
-                        }`;
-        break;
+        boilerplateCode = `export default class ${componentName} {
+  constructor() {
+      // Initalize service
+  }
 
-      default:
-        console.log(`Unknown file type '${fileType}'.`);
-        return;
+  // Add service methods
+
+}`;
+        break;
     }
 
     writeFileSync(filePath, boilerplateCode);
