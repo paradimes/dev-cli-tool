@@ -10,6 +10,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "minimist": "^1.2.8"
-  }
+    "inquirer": "^9.2.16",
+    "minimist": "^1.2.8",
+    "node-fetch": "^3.3.2"
+  },
+  "type": "module"
 }

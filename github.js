@@ -1,4 +1,4 @@
-async function createRepository(
+export async function createRepository(
   repoName,
   repoDescription,
   isPrivate,
@@ -25,12 +25,11 @@ async function createRepository(
     } else {
       const errorData = await response.json();
       console.error(`Error creating repository: ${errorData.message}`);
+      console.error(`Status code: ${response.status}`);
+      console.error(`Error details: ${JSON.stringify(errorData.errors)}`);
     }
   } catch (error) {
-    console.error(`Error creating repository: ${error}`);
+    console.error(`Error creating repository: ${error.message}`);
+    console.error(`Error details: error`);
   }
 }
-
-module.exports = {
-  createRepository,
-};
