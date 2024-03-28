@@ -1,52 +1,90 @@
 import { existsSync, mkdirSync, writeFileSync } from "fs";
-import { join, parse } from "path";
+import path, { join, parse } from "path";
+import { execCommand } from "./index.js";
 
-export function createProjectDirectory(projectName, projectType) {
+export async function createProjectDirectory(
+  projectName,
+  projectType,
+  options
+) {
   const projectPath = join(process.cwd(), projectName);
 
-  try {
-    if (existsSync(projectPath)) {
-      console.log(`Directory ${projectName} already exists.`);
-      return;
-    }
-
-    mkdirSync(projectPath);
-    console.log(`Created directory '${projectName}'`);
-
-    switch (projectType) {
-      case "react":
-        createReactProject(projectPath);
-        break;
-
-      case "express":
-        createExpressProject(projectPath);
-        break;
-    }
-  } catch (error) {
-    console.error(`Error creating project directory: ${error.message}`);
+  switch (projectType) {
+    case "react":
+      await createReactProject(projectName, options);
+      break;
   }
 }
 
-function createReactProject(projectPath) {
-  mkdirSync(join(projectPath, "src"));
-  writeFileSync(
-    join(projectPath, "src", "index.js"),
-    "// React project index.js"
-  );
-  writeFileSync(
-    join(projectPath, "package.json"),
-    "// React project package.json"
-  );
-  console.log(`Created React project structure.`);
-}
+async function createReactProject(projectName, options) {
+  const { useTypeScript, useTailwind, useFramerMotion, useReactRouter } =
+    options;
 
-function createExpressProject(projectPath) {
-  writeFileSync(join(projectPath, "app.js"), "// Express project app.js");
-  writeFileSync(
-    join(projectPath, "package.json"),
-    "// Express project package.json"
+  console.log("Creating React project... ----------------------------------");
+  // Create React project using Vite
+  await execCommand(
+    `npm create vite@latest ${projectName} -- --template react${
+      useTypeScript ? "-ts" : ""
+    }`
   );
-  console.log(`Created Express project structure`);
+  console.log(
+    "React project created successfully ----------------------------------"
+  );
+  process.chdir(projectName);
+  await execCommand("npm install");
+
+  // install additional deps based on selected options
+  const dependencies = [];
+  if (useTailwind) {
+    dependencies.push("tailwindcss@latest postcss@latest autoprefixer@latest");
+  }
+  if (useFramerMotion) {
+    dependencies.push("framer-motion");
+  }
+  if (useReactRouter) {
+    dependencies.push("react-router-dom");
+  }
+
+  console.log(
+    "Installing additional dependencies... ----------------------------------"
+  );
+  if (dependencies.length > 0) {
+    await execCommand(`npm install ${dependencies.join(" ")}`);
+  }
+  console.log(
+    "Additional dependencies installed successfully ----------------------------------"
+  );
+
+  // Generate Taiwind CSS configuration files
+  if (useTailwind) {
+    console.log("Tailwind config... ----------------------------------");
+    await execCommand("npx tailwindcss init -p");
+
+    // Update tailwind.config.js
+    writeFileSync(
+      "tailwind.config.js",
+      `/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}`
+    );
+
+    // Update index.css
+    writeFileSync(
+      "src/index.css",
+      `@tailwind base;
+@tailwind components;
+@tailwind utilities;`
+    );
+  }
+  console.log("Tailwind config completed ----------------------------------");
 }
 
 export function generateBoilerplateCode(fileType, fileName) {

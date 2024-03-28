@@ -6,19 +6,39 @@ import { createRepository } from "./github.js";
 import inquirer from "inquirer";
 import { loadConfig, saveConfig } from "./config.js";
 import path from "path";
-import { exec } from "child_process";
+// import { exec } from "child_process";
+import { spawn } from "child_process";
 
-function execCommand(command) {
+export function execCommand(command) {
   return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        reject(error);
+    const [cmd, ...args] = command.split(" ");
+    const child = spawn(cmd, args, { stdio: "inherit" });
+
+    child.on("error", (error) => {
+      reject(error);
+    });
+
+    child.on("close", (code) => {
+      if (code !== 0) {
+        reject(new Error(`Command failed with exit code ${code}`));
       } else {
-        resolve(stdout.trim());
+        resolve();
       }
     });
   });
 }
+
+// export function execCommand(command) {
+//   return new Promise((resolve, reject) => {
+//     exec(command, (error, stdout, stderr) => {
+//       if (error) {
+//         reject(error);
+//       } else {
+//         resolve(stdout.trim());
+//       }
+//     });
+//   });
+// }
 
 const args = minimist(process.argv.slice(2));
 const config = loadConfig();
@@ -26,28 +46,60 @@ const config = loadConfig();
 if (args._.includes("new")) {
   //   console.log("args === ", args);
 
-  const projectName = args._[1];
-
-  if (!projectName) {
-    console.log("Please provide a project name.");
-    process.exit(1);
-  }
-
-  const defaultProjectType = config.defaultProjectType || "default";
-
   inquirer
     .prompt([
       {
-        type: "list",
-        name: "projectType",
-        message: "Select a project type:",
-        choices: ["react", "express"],
-        default: defaultProjectType,
+        type: "input",
+        name: "projectName",
+        message: "Enter the project name:",
+        validate: (input) => {
+          if (input.trim() === "") {
+            return "Please enter a valid project name.";
+          }
+          return true;
+        },
+      },
+      {
+        type: "confirm",
+        name: "useTypeScript",
+        message: "Do you want to use TypeScript?",
+        default: true,
+      },
+      {
+        type: "confirm",
+        name: "useTailwind",
+        message: "Do you want to use Tailwind CSS for styling?",
+        default: true,
+      },
+      {
+        type: "confirm",
+        name: "useFramerMotion",
+        message: "Do you want to use Framer Motion for animations?",
+        default: true,
+      },
+      {
+        type: "confirm",
+        name: "useReactRouter",
+        message: "Do you want to use React Router for routing?",
+        default: true,
       },
     ])
-    .then((answers) => {
-      const projectType = answers.projectType;
-      createProjectDirectory(projectName, projectType);
+    .then(async (answers) => {
+      const {
+        projectName,
+        useTypeScript,
+        useTailwind,
+        useFramerMotion,
+        useReactRouter,
+      } = answers;
+
+      const options = {
+        useTypeScript,
+        useTailwind,
+        useFramerMotion,
+        useReactRouter,
+      };
+      await createProjectDirectory(projectName, "react", options);
     })
     .catch((error) => {
       console.error("Error:", error);
@@ -147,7 +199,7 @@ if (args._.includes("new")) {
         type: "list",
         name: "projectType",
         message: "Select a default project type:",
-        choices: ["react", "express"],
+        choices: ["react"],
         default: config.defaultProjectType,
       },
       {
