@@ -2,7 +2,6 @@ import { existsSync, mkdirSync, writeFileSync } from "fs";
 import path, { join, parse } from "path";
 import { execCommand } from "./index.js";
 import ora from "ora";
-import cliProgress from "cli-progress";
 
 export async function createProjectDirectory(
   projectName,
@@ -93,7 +92,7 @@ export default {
 }
 
 export function generateBoilerplateCode(fileType, fileName) {
-  const spinner = ora(`Generating ${fileType} file...`).start();
+  const spinner = ora(`Generating ${fileType} file 🪚`).start();
 
   const filePath = join(process.cwd(), fileName);
 
@@ -135,8 +134,8 @@ export default ${componentName};`;
     }
 
     writeFileSync(filePath, boilerplateCode);
-    spinner.succeed(`Generated ${fileType} file '${fileName}'.`);
+    spinner.succeed(`Generated ${fileType} file '${fileName}' ✅ 🏁`);
   } catch (error) {
-    spinner.fail(`Error generating ${fileType} file: ${error.message}`);
+    spinner.fail(`Error generating ${fileType} file ❌: ${error.message}`);
   }
 }

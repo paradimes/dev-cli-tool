@@ -6,7 +6,6 @@ import { createRepository } from "./github.js";
 import inquirer from "inquirer";
 import { loadConfig, saveConfig } from "./config.js";
 import path from "path";
-// import { exec } from "child_process";
 import { spawn } from "child_process";
 
 export function execCommand(command) {
@@ -27,18 +26,6 @@ export function execCommand(command) {
     });
   });
 }
-
-// export function execCommand(command) {
-//   return new Promise((resolve, reject) => {
-//     exec(command, (error, stdout, stderr) => {
-//       if (error) {
-//         reject(error);
-//       } else {
-//         resolve(stdout.trim());
-//       }
-//     });
-//   });
-// }
 
 const args = minimist(process.argv.slice(2));
 const config = loadConfig();
