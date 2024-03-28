@@ -1,6 +1,8 @@
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import path, { join, parse } from "path";
 import { execCommand } from "./index.js";
+import ora from "ora";
+import cliProgress from "cli-progress";
 
 export async function createProjectDirectory(
   projectName,
@@ -20,50 +22,50 @@ async function createReactProject(projectName, options) {
   const { useTypeScript, useTailwind, useFramerMotion, useReactRouter } =
     options;
 
-  console.log("Creating React project... ----------------------------------");
-  // Create React project using Vite
-  await execCommand(
-    `npm create vite@latest ${projectName} -- --template react${
-      useTypeScript ? "-ts" : ""
-    }`
-  );
-  console.log(
-    "React project created successfully ----------------------------------"
-  );
-  process.chdir(projectName);
-  await execCommand("npm install");
+  const spinner = ora("Creating React project 🪚").start();
 
-  // install additional deps based on selected options
-  const dependencies = [];
-  if (useTailwind) {
-    dependencies.push("tailwindcss@latest postcss@latest autoprefixer@latest");
-  }
-  if (useFramerMotion) {
-    dependencies.push("framer-motion");
-  }
-  if (useReactRouter) {
-    dependencies.push("react-router-dom");
-  }
+  try {
+    // Create React project using Vite
+    await execCommand(
+      `npm create vite@latest ${projectName} -- --template react${
+        useTypeScript ? "-ts" : ""
+      }`
+    );
 
-  console.log(
-    "Installing additional dependencies... ----------------------------------"
-  );
-  if (dependencies.length > 0) {
-    await execCommand(`npm install ${dependencies.join(" ")}`);
-  }
-  console.log(
-    "Additional dependencies installed successfully ----------------------------------"
-  );
+    spinner.succeed("React project created successfully ✅ 🏁");
 
-  // Generate Taiwind CSS configuration files
-  if (useTailwind) {
-    console.log("Tailwind config... ----------------------------------");
-    await execCommand("npx tailwindcss init -p");
+    process.chdir(projectName);
+    await execCommand("npm install");
 
-    // Update tailwind.config.js
-    writeFileSync(
-      "tailwind.config.js",
-      `/** @type {import('tailwindcss').Config} */
+    // install additional deps based on selected options
+    const dependencies = [];
+    if (useTailwind) {
+      dependencies.push(
+        "tailwindcss@latest postcss@latest autoprefixer@latest"
+      );
+    }
+    if (useFramerMotion) {
+      dependencies.push("framer-motion");
+    }
+    if (useReactRouter) {
+      dependencies.push("react-router-dom");
+    }
+
+    if (dependencies.length > 0) {
+      spinner.start("Installing additional dependencies 🪚");
+      await execCommand(`npm install ${dependencies.join(" ")}`);
+      spinner.succeed("Additional dependencies installed successfully ✅ 🏁");
+    }
+
+    // Generate Taiwind CSS configuration files
+    if (useTailwind) {
+      spinner.start("Handling Tailwind configuration 🪚");
+      await execCommand("npx tailwindcss init -p");
+
+      // Update tailwind.config.js
+      writeFileSync(
+        "tailwind.config.js",
+        `/** @type {import('tailwindcss').Config} */
 export default {
   content: [
     "./index.html",
@@ -74,25 +76,30 @@ export default {
   },
   plugins: [],
 }`
-    );
+      );
 
-    // Update index.css
-    writeFileSync(
-      "src/index.css",
-      `@tailwind base;
+      // Update index.css
+      writeFileSync(
+        "src/index.css",
+        `@tailwind base;
 @tailwind components;
 @tailwind utilities;`
-    );
+      );
+    }
+    spinner.succeed("Tailwind config completed ✅ 🏁");
+  } catch (error) {
+    spinner.fail(`Error creating React project ❌: ${error.message}`);
   }
-  console.log("Tailwind config completed ----------------------------------");
 }
 
 export function generateBoilerplateCode(fileType, fileName) {
+  const spinner = ora(`Generating ${fileType} file...`).start();
+
   const filePath = join(process.cwd(), fileName);
 
   try {
     if (existsSync(filePath)) {
-      console.log(`File ${fileName} already exists`);
+      spinner.fail(`File ${fileName} already exists`);
       return;
     }
 
@@ -128,8 +135,8 @@ export default ${componentName};`;
     }
 
     writeFileSync(filePath, boilerplateCode);
-    console.log(`Generated ${fileType} file '${fileName}'.`);
+    spinner.succeed(`Generated ${fileType} file '${fileName}'.`);
   } catch (error) {
-    console.error(`Error generating ${fileType} file: ${error.message}`);
+    spinner.fail(`Error generating ${fileType} file: ${error.message}`);
   }
 }
