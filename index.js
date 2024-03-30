@@ -11,26 +11,35 @@ import { fileURLToPath } from "url";
 
 // utility function: executes a given `command` in the terminal using `spawn`
 export function execCommand(command) {
+  // returns a new Promise that will resolve with the command's output if it succeeds or reject with an error if it fails
   return new Promise((resolve, reject) => {
+    // inside the Promise, it uses the `spawn` function from the `child_process` module to create a new child process and execute the command
     const child = spawn(command, { shell: true });
     let output = "";
 
+    // it attaches event listeners to the child process:
+    // this listens for data on the standard --output-- stream and appends it to the `output` variable
     child.stdout.on("data", (data) => {
       output += data.toString();
     });
 
+    // this listens for data on the standard --error-- stream and appends it to the `output` variable
     child.stderr.on("data", (data) => {
       output += data.toString();
     });
 
+    // this listens for any errors that occur during the execution of the command and rejects the Promise with the error.
     child.on("error", (error) => {
       reject(error);
     });
 
+    // this listen for the child process to close and checks the exit code
     child.on("close", (code) => {
+      // code 0 indicates success, so any other code should reject the Promise with an error message that includes the exit code and the captured output
       if (code !== 0) {
         reject(new Error(`Command failed with exit code ${code}: ${output}`));
       } else {
+        // the code was 0 therefore indicating success, resolves the Promise with the trimmed output
         resolve(output.trim());
       }
     });
