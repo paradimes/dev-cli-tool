@@ -9,10 +9,19 @@ import path from "path";
 import { spawn } from "child_process";
 import { fileURLToPath } from "url";
 
+// utility function: executes a given `command` in the terminal using `spawn`
 export function execCommand(command) {
   return new Promise((resolve, reject) => {
-    const [cmd, ...args] = command.split(" ");
-    const child = spawn(cmd, args, { stdio: "inherit" });
+    const child = spawn(command, { shell: true });
+    let output = "";
+
+    child.stdout.on("data", (data) => {
+      output += data.toString();
+    });
+
+    child.stderr.on("data", (data) => {
+      output += data.toString();
+    });
 
     child.on("error", (error) => {
       reject(error);
@@ -20,9 +29,9 @@ export function execCommand(command) {
 
     child.on("close", (code) => {
       if (code !== 0) {
-        reject(new Error(`Command failed with exit code ${code}`));
+        reject(new Error(`Command failed with exit code ${code}: ${output}`));
       } else {
-        resolve();
+        resolve(output.trim());
       }
     });
   });

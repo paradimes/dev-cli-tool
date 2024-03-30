@@ -1,5 +1,5 @@
-import { existsSync, mkdirSync, writeFileSync } from "fs";
-import path, { join, parse } from "path";
+import { existsSync, writeFileSync } from "fs";
+import { join, parse } from "path";
 import { execCommand } from "./index.js";
 import ora from "ora";
 
