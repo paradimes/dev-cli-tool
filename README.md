@@ -22,6 +22,16 @@ Whether you're a seasoned developer or just starting out, Project Scaffold provi
 
 Get started with Project Scaffold today and revolutionize the way you create and manage your projects!
 
+## Installation
+
+To use Project Scaffold globally on your computer, you need to install it as a global package using npm. Open your terminal and run the following command:
+
+```bash
+npm install -g project-scaffold
+```
+
+This will install Project Scaffold globally, allowing you to use the `scaffold` command from anywhere on your computer.
+
 ## Commands
 
 1. **Create a new project:**  
