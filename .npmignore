@@ -1,0 +1,26 @@
+# Ignore version control files
+.git
+.gitignore
+
+# Ignore development files
+node_modules
+tests
+.vscode
+
+# Ignore configuration files
+.editorconfig
+.eslintrc
+.prettierrc
+
+# Ignore build artifacts
+dist
+build
+
+# Ignore documentation files
+docs
+README.md
+CHANGELOG.md
+
+# Ignore miscellaneous files
+.DS_Store
+Thumbs.db

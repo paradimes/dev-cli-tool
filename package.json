@@ -1,27 +1,37 @@
 {
-  "name": "dev-cli-tool",
+  "name": "project-scaffold",
   "version": "1.0.0",
-  "description": "",
+  "description": "A CLI tool for scaffolding and managing development projects/ React, Typescript, Vite, TailwindCSS, Framer Motion, React Router Dom.",
   "main": "index.js",
+  "bin": {
+    "scaffold": "./index.js"
+  },
   "type": "module",
   "scripts": {
-    "test": "vitest"
+    "start": "node index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": [
+    "cli",
+    "development",
+    "scaffolding",
+    "project management"
+  ],
+  "author": "Anas / paradimes",
+  "license": "MIT",
   "dependencies": {
-    "autoprefixer": "^10.4.19",
-    "framer-motion": "^11.0.22",
-    "inquirer": "^9.2.16",
+    "inquirer": "^9.1.4",
     "minimist": "^1.2.8",
-    "node-fetch": "^3.3.2",
-    "ora": "^8.0.1",
-    "postcss": "^8.4.38",
-    "react-router-dom": "^6.22.3",
-    "tailwindcss": "^3.4.3"
+    "ora": "^6.1.2"
   },
   "devDependencies": {
     "vitest": "^1.4.0"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/paradimes/dev-cli-tool.git"
+  },
+  "bugs": {
+    "url": "https://github.com/paradimes/dev-cli-tool/issues"
+  },
+  "homepage": "https://github.com/paradimes/dev-cli-tool#readme"
 }
