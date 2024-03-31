@@ -46,13 +46,10 @@ export function execCommand(command) {
   });
 }
 
-function runCLI() {
-  const args = minimist(process.argv.slice(2));
+function runCLI(command, args) {
   const config = loadConfig();
 
-  if (args._.includes("new")) {
-    //   console.log("args === ", args);
-
+  if (command === "new") {
     inquirer
       .prompt([
         {
@@ -112,7 +109,7 @@ function runCLI() {
         console.error("Error:", error);
         process.exit(1);
       });
-  } else if (args._.includes("generate")) {
+  } else if (command === "generate") {
     inquirer
       .prompt([
         {
@@ -141,7 +138,7 @@ function runCLI() {
         console.error(`Error:, ${error}`);
         process.exit(1);
       });
-  } else if (args._.includes("create-repo")) {
+  } else if (command === "create-repo") {
     inquirer
       .prompt([
         {
@@ -199,7 +196,7 @@ function runCLI() {
           process.exit(1);
         }
       });
-  } else if (args._.includes("config")) {
+  } else if (command === "config") {
     inquirer
       .prompt([
         {
@@ -235,6 +232,12 @@ function runCLI() {
   }
 }
 
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  runCLI();
+const args = minimist(process.argv.slice(2));
+const command = args._[0];
+
+if (command) {
+  runCLI(command, args);
+} else {
+  console.log("No command provided.");
+  process.exit(1);
 }
