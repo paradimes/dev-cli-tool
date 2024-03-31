@@ -2,7 +2,7 @@
 
 Project Scaffold is a powerful CLI tool designed to streamline the process of scaffolding and managing development projects. With a focus on the popular tech stack of React, TypeScript, Vite, Tailwind CSS, Framer Motion, and React Router Dom, this tool provides a seamless and efficient way to kickstart your projects.
 
-Key Features:
+## Key Features
 
 - Quickly generate a new project structure with a single command
 - Automatically set up a React project with TypeScript support
@@ -24,10 +24,10 @@ Get started with Project Scaffold today and revolutionize the way you create and
 
 ## Commands
 
-1. Create a new project:
-   Command: scaffold new
-   Description: Generates a new project structure based on the selected options.
-   Options:
+1. **Create a new project:**  
+   **Command:** `scaffold new`  
+   **Description:** Generates a new project structure based on the selected options.  
+   **Options:**
 
    - Project name (prompted)
    - Use TypeScript (prompted, default: true)
@@ -35,54 +35,65 @@ Get started with Project Scaffold today and revolutionize the way you create and
    - Use Framer Motion (prompted, default: true)
    - Use React Router (prompted, default: true)
 
-2. Generate boilerplate code:
-   Command: scaffold generate
-   Description: Generates boilerplate code for components or services.
-   Options:
+2. **Generate boilerplate code:**  
+   **Command:** `scaffold generate`  
+   **Description:** Generates boilerplate code for components or services.  
+   **Options:**
 
    - File type (prompted, choices: component, service)
    - File name (prompted)
 
-3. Create a GitHub repository:
-   Command: scaffold create-repo
-   Description: Creates a new GitHub repository and clones it locally.
-   Options:
+3. **Create a GitHub repository:**  
+   **Command:** `scaffold create-repo`  
+   **Description:** Creates a new GitHub repository and clones it locally.  
+   **Options:**
 
    - Repository name (prompted)
    - Repository description (prompted, optional)
    - Private repository (prompted, default: false)
    - GitHub personal access token (prompted, optional if already configured)
 
-4. Configure default settings:
-   Command: scaffold config
-   Description: Sets default configuration options for the CLI tool.
-   Options:
+4. **Configure default settings:**  
+   **Command:** `scaffold config`  
+   **Description:** Sets default configuration options for the CLI tool.  
+   **Options:**
    - Default project type (prompted, choices: react)
    - GitHub personal access token (prompted, optional)
 
-## Examples:
+## Examples
 
-1. Create a new React project with TypeScript, Tailwind CSS, Framer Motion, and React Router:
+1. **Create a new React project with TypeScript, Tailwind CSS, Framer Motion, and React Router:**
+
+   ```bash
    $ scaffold new
    ? Enter the project name: my-app
    ? Do you want to use TypeScript? Yes
    ? Do you want to use Tailwind CSS for styling? Yes
    ? Do you want to use Framer Motion for animations? Yes
    ? Do you want to use React Router for routing? Yes
+   ```
 
-2. Generate a new React component:
+2. **Generate a new React component:**
+
+   ```bash
    $ scaffold generate
    ? Select what type of file you want to generate: component
    ? Enter the file name: Header.js
+   ```
 
-3. Create a new GitHub repository:
+3. **Create a new GitHub repository:**
+
+   ```bash
    $ scaffold create-repo
    ? Enter the repository name: my-repo
    ? Enter the repository description (optional): My awesome project
    ? Do you want to make the repository private? No
    ? Enter your GitHub personal access token (optional if you've already configured it): <your-token>
+   ```
 
-4. Set default configuration:
+4. **Set default configuration:**
+   ```bash
    $ scaffold config
    ? Select a default project type: react
    ? Enter your GitHub personal access token (optional): <your-token>
+   ```
