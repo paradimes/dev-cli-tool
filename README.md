@@ -54,7 +54,7 @@ This will install Project Scaffold globally, allowing you to use the `scaffold` 
    - File name (prompted)
 
 3. **Create a GitHub repository:**  
-   **Command:** `scaffold create-repo`  
+   **Command:** `scaffold repo`  
    **Description:** Creates a new GitHub repository and clones it locally.  
    **Options:**
 
@@ -94,7 +94,7 @@ This will install Project Scaffold globally, allowing you to use the `scaffold` 
 3. **Create a new GitHub repository:**
 
    ```bash
-   $ scaffold create-repo
+   $ scaffold repo
    ? Enter the repository name: my-repo
    ? Enter the repository description (optional): My awesome project
    ? Do you want to make the repository private? No

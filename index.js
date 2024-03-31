@@ -138,7 +138,7 @@ function runCLI(command, args) {
         console.error(`Error:, ${error}`);
         process.exit(1);
       });
-  } else if (command === "create-repo") {
+  } else if (command === "repo") {
     inquirer
       .prompt([
         {
