@@ -24,3 +24,5 @@ CHANGELOG.md
 # Ignore miscellaneous files
 .DS_Store
 Thumbs.db
+
+tests
